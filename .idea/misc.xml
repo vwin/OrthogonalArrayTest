@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="JavaScriptSettings">
+    <option name="languageLevel" value="ES6" />
+  </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
       <profile-state>
@@ -8,13 +11,28 @@
             <id />
           </State>
           <State>
-            <id>Google App Engine (Python)</id>
+            <id>Flow type checkerJavaScript</id>
+          </State>
+          <State>
+            <id>General</id>
+          </State>
+          <State>
+            <id>Internationalization issues</id>
+          </State>
+          <State>
+            <id>JavaScript</id>
+          </State>
+          <State>
+            <id>Less</id>
           </State>
           <State>
             <id>Pyramid</id>
           </State>
           <State>
             <id>Python</id>
+          </State>
+          <State>
+            <id>Sass/SCSS</id>
           </State>
         </expanded-state>
       </profile-state>
