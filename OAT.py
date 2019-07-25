@@ -7,52 +7,68 @@ import os
 
 def dataSplit(data):
     ds = []
-    mb = [sum([k for m, k in data['mk'] if m <= 10]), sum([k for m, k in data['mk'] if m > 10])]
-    for i in data['data']:
+    mb = [
+        sum([k for m, k in data["mk"] if m <= 10]),
+        sum([k for m, k in data["mk"] if m > 10]),
+    ]
+    for i in data["data"]:
         if mb[1] == 0:
             ds.append([int(d) for d in i])
         elif mb[0] == 0:
-            ds.append([int(i[n * 2:(n + 1) * 2]) for n in range(mb[1])])
+            ds.append([int(i[n * 2 : (n + 1) * 2]) for n in range(mb[1])])
         else:
-            part_1 = [int(j) for j in i[:mb[0]]]
-            part_2 = [int(i[mb[0]:][n * 2:(n + 1) * 2]) for n in range(mb[1])]
+            part_1 = [int(j) for j in i[: mb[0]]]
+            part_2 = [int(i[mb[0] :][n * 2 : (n + 1) * 2]) for n in range(mb[1])]
             ds.append(part_1 + part_2)
     return ds
 
 
 class OAT(object):
-    def __init__(self, OAFile=os.path.split(os.path.realpath(__file__))[0] + '/data/ts723_Designs.txt'):
+    def __init__(
+        self,
+        OAFile=os.path.split(os.path.realpath(__file__))[0] + "/data/ts723_Designs.txt",
+    ):
         """
         初始化解析构造正交表对象，数据来源：http://support.sas.com/techsup/technote/ts723_Designs.txt
         """
         self.data = {}
 
         # 解析正交表文件数据
-        with open(OAFile, ) as f:
+        with open(OAFile) as f:
             # 定义临时变量
-            key = ''
+            key = ""
             value = []
             pos = 0
 
             for i in f:
                 i = i.strip()
-                if 'n=' in i:
+                if "n=" in i:
                     if key and value:
-                        self.data[key] = dict(pos=pos,
-                                              n=int(key.split('n=')[1].strip()),
-                                              mk=[[int(mk.split('^')[0]), int(mk.split('^')[1])] for mk in key.split('n=')[0].strip().split(' ')],
-                                              data=value)
-                    key = ' '.join([k for k in i.split(' ') if k])
+                        self.data[key] = dict(
+                            pos=pos,
+                            n=int(key.split("n=")[1].strip()),
+                            mk=[
+                                [int(mk.split("^")[0]), int(mk.split("^")[1])]
+                                for mk in key.split("n=")[0].strip().split(" ")
+                            ],
+                            data=value,
+                        )
+                    key = " ".join([k for k in i.split(" ") if k])
                     value = []
                     pos += 1
                 elif i:
                     value.append(i)
 
-            self.data[key] = dict(pos=pos,
-                                  n=int(key.split('n=')[1].strip()),
-                                  mk=[[int(mk.split('^')[0]), int(mk.split('^')[1])]for mk in key.split('n=')[0].strip().split(' ')],
-                                  data=value)
-        self.data = sorted(self.data.items(), key=lambda i: i[1]['pos'])
+            self.data[key] = dict(
+                pos=pos,
+                n=int(key.split("n=")[1].strip()),
+                mk=[
+                    [int(mk.split("^")[0]), int(mk.split("^")[1])]
+                    for mk in key.split("n=")[0].strip().split(" ")
+                ],
+                data=value,
+            )
+        self.data = sorted(self.data.items(), key=lambda i: i[1]["pos"])
 
     def get(self, mk):
         """
@@ -71,14 +87,18 @@ class OAT(object):
         m = max([i[0] for i in mk])
         k = sum([i[1] for i in mk])
         n = sum([i[1] * (i[0] - 1) for i in mk]) + 1
-        query_key = ' '.join(['^'.join([str(j) for j in i]) for i in mk])
+        query_key = " ".join(["^".join([str(j) for j in i]) for i in mk])
 
         for data in self.data:
             # 先查询是否有完全匹配的正交表数据
             if query_key in data[0]:
                 return dataSplit(data[1])
             # 否则返回满足>=m,n,k条件的n最小数据
-            elif data[1]['n'] >= n and data[1]['mk'][0][0] >= m and data[1]['mk'][0][1] >= k:
+            elif (
+                data[1]["n"] >= n
+                and data[1]["mk"][0][0] >= m
+                and data[1]["mk"][0][1] >= k
+            ):
                 return dataSplit(data[1])
         # 无结果
         return None
@@ -91,7 +111,10 @@ class OAT(object):
             1 严格模式，除裁剪重复测试集外，还裁剪含None测试集(num为允许None测试集最大数目)
         """
         sets = []
-        mk = [(k, len(list(v)))for k, v in groupby(params.items(), key=lambda x:len(x[1]))]
+        mk = [
+            (k, len(list(v)))
+            for k, v in groupby(params.items(), key=lambda x: len(x[1]))
+        ]
         data = self.get(mk)
         for d in data:
             # 根据正则表结果生成测试集
@@ -105,7 +128,10 @@ class OAT(object):
             if q not in sets:
                 if mode == 0:
                     sets.append(q)
-                elif mode == 1 and (len(list(filter(lambda v: v is None, q.values())))) <= num:
+                elif (
+                    mode == 1
+                    and (len(list(filter(lambda v: v is None, q.values())))) <= num
+                ):
                     # 测试集裁剪,去除重复及含None测试集
                     sets.append(q)
         return sets
