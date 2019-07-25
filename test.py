@@ -8,9 +8,6 @@ pip install requests
 pip install nose
 """
 
-
-
-
 if __name__ == "__main__":
     oat = OAT()
     case1 = OrderedDict([("K1", [0, 1]), ("K2", [0, 1]), ("K3", [0, 1])])
